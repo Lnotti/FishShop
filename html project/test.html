@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fish Shop</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #336699;
+        }
+
+        #fishContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 50px;
+        }
+
+        .fish {
+            position: relative;
+        }
+
+        .fish img {
+            width: 200px;
+            height: auto;
+            cursor: pointer;
+        }
+
+        .fish p {
+            margin-top: 10px;
+        }
+
+        .sold-out-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            font-size: 24px;
+        }
+
+        #resultContainer {
+            margin-top: 50px;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        #moneyDisplay {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Fish Shop!</h1>
+    <p>Your Money: <span id="moneyDisplay">500</span></p>
+    <div id="fishContainer">
+        <div class="fish">
+            <img src="images/arrowana.jpg" alt="arrowana" onclick="buyFish.call(this)">
+            <p>Price: $1400</p>
+        </div>
+        <div class="fish">
+            <img src="images/Discus.jpg" alt="Discus" onclick="buyFish.call(this)">
+            <p>Price: $125</p>
+        </div>
+        <div class="fish">
+            <img src="images/Dwarf chicilid.jpg" alt="Dwarf chicilid" onclick="buyFish.call(this)">
+            <p>Price: $120</p>
+        </div>
+        <div class="fish">
+            <img src="images/Tobypufferfish.jpg" alt="Tobypufferfish" onclick="buyFish.call(this)">
+            <p>Price: $55</p>
+        </div>
+        <div class="fish">
+            <img src="images/Beta.jpg" alt="Beta" onclick="buyFish.call(this)">
+            <p>Price: $35</p>
+        </div>
+        <div class="fish">
+            <img src="images/butterflyFish.jpg" alt="butterflyFish" onclick="buyFish.call(this)">
+            <p>Price: $30</p>
+        </div>
+        <div class="fish">
+            <img src="images/oscar.jpg" alt="oscar" onclick="buyFish.call(this)">
+            <p>Price: $21</p>
+        </div>
+        <div class="fish">
+            <img src="images/catfish.jpg" alt="catfish" onclick="buyFish.call(this)">
+            <p>Price: $20</p>
+        </div>
+        <div class="fish">
+            <img src="images/angelfish.jpg" alt="angelfish" onclick="buyFish.call(this)">
+            <p>Price: $15</p>
+        </div>
+        <div class="fish">
+            <img src="images/gourami.jpg" alt="gourami" onclick="buyFish.call(this)">
+            <p>Price: $10</p>
+        </div>
+    </div>
+    <button id="checkFishBtn">Check Fish</button>
+    <div id="resultContainer"></div>
+    <img src="images/cartoonfish.jpg" alt="cartoonfish" id="cartoonFish">
+
+    <script>
+        const fishList = [
+            { name: "arrowana", price: 1400 },
+            { name: "Discus", price: 125 },
+            { name: "Dwarf chicilid", price: 120 },
+            { name: "Tobypufferfish", price: 55 },
+            { name: "Beta", price: 35 },
+            { name: "butterflyFish", price: 30 },
+            { name: "oscar", price: 21 },
+            { name: "catfish", price: 20 },
+            { name: "angelfish", price: 15 },
+            { name: "gourami", price: 10 }
+        ];
+
+        let money = 500;
+
+        function buyFish() {
+            const fishIndex = Array.from(this.parentNode.parentNode.children).indexOf(this.parentNode);
+            const selectedFish = fishList[fishIndex];
+
+            if (money >= selectedFish.price) {
+                money -= selectedFish.price;
+                updateMoneyDisplay();
+                displayResult(`You bought a ${selectedFish.name} for $${selectedFish.price}.`);
+                this.parentNode.classList.add('sold-out');
+                this.removeEventListener('click', buyFish);
+            } else {
+                displayResult("You don't have enough money to buy this fish.");
+            }
+        }
+
+        function updateMoneyDisplay() {
+            const moneyDisplay = document.getElementById('moneyDisplay');
+            moneyDisplay.textContent = money;
+        }
+
+        function displayResult(message) {
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.textContent = message;
+        }
+
+        const checkFishBtn = document.getElementById('checkFishBtn');
+        checkFishBtn.addEventListener('click', () => {
+            let availableFishCount = 0;
+            const fishElements = document.getElementsByClassName('fish');
+
+            Array.from(fishElements).forEach((fishElement, index) => {
+                const fish = fishList[index];
+                if (!fishElement.classList.contains('sold-out')) {
+                    fishElement.querySelector('img').style.border = '2px solid green';
+                    availableFishCount++;
+                } else {
+                    fishElement.querySelector('img').style.border = 'none';
+                }
+            });
+
+            if (availableFishCount === 0) {
+                displayResult('All fish are sold out.');
+            } else {
+                displayResult(`There are ${availableFishCount} fish available for purchase.`);
+            }
+        });
+
+        updateMoneyDisplay();
+        // Get the cartoon fish element
+        const cartoonFish = document.getElementById('cartoonFish');
+
+        // Get the width and height of the window
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        // Calculate the maximum X and Y positions for the fish
+        const maxX = windowWidth - cartoonFish.width;
+        const maxY = windowHeight - cartoonFish.height;
+
+        // Function to get a random position within the window
+        function getRandomPosition() {
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+            return { x: randomX, y: randomY };
+        }
+
+        // Function to move the fish to a random position
+        function moveFish() {
+            const position = getRandomPosition();
+            cartoonFish.style.left = position.x + 'px';
+            cartoonFish.style.top = position.y + 'px';
+        }
+
+        // Move the fish initially
+        moveFish();
+
+        // Move the fish every 3 seconds
+        setInterval(moveFish, 3000);
+    </script>
+</body>
+</html>
